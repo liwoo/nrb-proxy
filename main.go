@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 type NationalIDRequestDTO struct {
@@ -46,12 +48,14 @@ func main() {
 	baseUrlPtr := flag.String("baseurl", "http://localhost:8080", "Base URL of the service")
 	clientIdPtr := flag.String("clientid", "SomeClientID", "Client ID of the service")
 	clientSecretPtr := flag.String("clientsecret", "SomeClientSecret", "Client Secret of the service")
+	portPtr := flag.Int("port", 8080, "Port to listen on")
 
 	flag.Parse()
 
 	baseURL := *baseUrlPtr
 	clientID := *clientIdPtr
 	clientSecret := *clientSecretPtr
+	port := *portPtr
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to NRB Proxy"))
@@ -102,4 +106,13 @@ func main() {
 			_ = json.NewEncoder(w).Encode(responseDTO)
 		}
 	})
+
+	portStr := ":" + strconv.Itoa(port)
+	log.Println("Listening on port " + portStr + "...")
+
+	err := http.ListenAndServe(portStr, nil)
+	if err != nil {
+		panic(err)
+		return
+	}
 }
