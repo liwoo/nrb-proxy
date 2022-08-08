@@ -74,9 +74,6 @@ func validateResponse(responseDTO NationalIDResponseDTO) (bool, string) {
 	if responseDTO.OtherNames != Correct {
 		return false, "Other Names is not correct"
 	}
-	if responseDTO.PlaceOfBirthDistrictName != Correct {
-		return false, "Place of Birth District Name is not correct"
-	}
 	if responseDTO.Status != Valid {
 		return false, "Status is not valid"
 	}
