@@ -43,6 +43,46 @@ func writeHttpError(w http.ResponseWriter, status int, message string) {
 	return
 }
 
+func validateResponse(responseDTO NationalIDResponseDTO) (bool, string) {
+	const Correct = "Correct"
+	const Valid = "Valid"
+	if responseDTO.DateOfBirthString != Correct {
+		return false, "Date of birth is not correct"
+	}
+	if responseDTO.DateOfExpiryString != Correct {
+		return false, "Date of expiry is not correct"
+	}
+	if responseDTO.DateOfIssueString != Correct {
+		return false, "Date of issue is not correct"
+	}
+	if responseDTO.FirstName != Correct {
+		return false, "First name is not correct"
+	}
+	if responseDTO.Gender != Correct {
+		return false, "Gender is not correct"
+	}
+	if responseDTO.IdNumber != Correct {
+		return false, "Id number is not correct"
+	}
+	if responseDTO.Nationality != Correct {
+		return false, "Nationality is not correct"
+	}
+	if responseDTO.OtherNames != Correct {
+		return false, "Other Names is not correct"
+	}
+	if responseDTO.PlaceOfBirthDistrictName != Correct {
+		return false, "Place of Birth District Name is not correct"
+	}
+	if responseDTO.Status != Valid {
+		return false, "Status is not valid"
+	}
+	if responseDTO.Surname != Correct {
+		return false, "Surname is not correct"
+	}
+
+	return true, responseDTO.Status
+}
+
 func main() {
 	//parse flags
 	baseUrlPtr := flag.String("baseurl", "http://localhost:8080", "Base URL of the service")
@@ -60,6 +100,7 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to NRB Proxy"))
 	})
+
 	//http endpoint
 	http.HandleFunc("/api/verify", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
@@ -100,10 +141,13 @@ func main() {
 				writeHttpError(w, http.StatusInternalServerError, "Error verifying with external service")
 			}
 
+			valid, msg := validateResponse(responseDTO)
+
+			if !valid {
+				writeHttpError(w, http.StatusUnprocessableEntity, msg)
+			}
 			//write response
-			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			_ = json.NewEncoder(w).Encode(responseDTO)
 		}
 	})
 
