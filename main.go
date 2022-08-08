@@ -47,6 +47,9 @@ func writeHttpError(w http.ResponseWriter, status int, message string) {
 func validateResponse(responseDTO NationalIDResponseDTO) (bool, string) {
 	const Correct = "CORRECT"
 	const Valid = "VALID"
+	//print response object
+	log.Println(responseDTO)
+
 	if responseDTO.DateOfBirthString != Correct {
 		return false, "Date of birth is not correct"
 	}
