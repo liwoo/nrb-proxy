@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -138,9 +139,12 @@ func main() {
 			//unmarshall response
 			var responseDTO NationalIDResponseDTO
 
-			err = json.NewDecoder(response.Body).Decode(&responseDTO)
+			body, _ := ioutil.ReadAll(response.Body)
+
+			err = json.Unmarshal(body, &responseDTO)
 
 			if err != nil {
+				log.Println(body)
 				writeHttpError(w, http.StatusInternalServerError, "Error Decoding response")
 				return
 			}
