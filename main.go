@@ -110,6 +110,7 @@ func main() {
 
 			if err != nil {
 				writeHttpError(w, http.StatusBadRequest, "Invalid request body")
+				return
 			}
 			//generate http request
 			requestBody, _ := json.Marshal(request)
@@ -117,7 +118,8 @@ func main() {
 			req, err := http.NewRequest("POST", baseURL+"/api/verify/postverify", bytes.NewBuffer(requestBody))
 
 			if err != nil {
-				writeHttpError(w, http.StatusInternalServerError, "Error verifying with external service")
+				writeHttpError(w, http.StatusInternalServerError, "Error generating request")
+				return
 			}
 
 			//set headers
@@ -130,6 +132,7 @@ func main() {
 
 			if err != nil {
 				writeHttpError(w, http.StatusInternalServerError, "Error verifying with external service")
+				return
 			}
 
 			//unmarshall response
@@ -138,13 +141,15 @@ func main() {
 			err = json.NewDecoder(response.Body).Decode(&responseDTO)
 
 			if err != nil {
-				writeHttpError(w, http.StatusInternalServerError, "Error verifying with external service")
+				writeHttpError(w, http.StatusInternalServerError, "Error Decoding response")
+				return
 			}
 
 			valid, msg := validateResponse(responseDTO)
 
 			if !valid {
 				writeHttpError(w, http.StatusUnprocessableEntity, msg)
+				return
 			}
 			//write response
 			w.WriteHeader(http.StatusOK)
