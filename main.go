@@ -125,14 +125,19 @@ func main() {
 
 			//set headers
 			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("ClientID", clientID)
-			req.Header.Set("ClientSecret", clientSecret)
+			req.Header.Set("ClientId", clientID)
+			req.Header.Set("ClientKey", clientSecret)
 
 			//make http request
 			response, err := http.DefaultClient.Do(req)
 
 			if err != nil {
 				writeHttpError(w, http.StatusInternalServerError, "Error verifying with external service")
+				return
+			}
+
+			if response.StatusCode != http.StatusOK {
+				writeHttpError(w, response.StatusCode, "Error verifying with external service")
 				return
 			}
 
