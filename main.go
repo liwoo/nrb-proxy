@@ -108,7 +108,7 @@ func main() {
 	})
 
 	portStr := ":" + strconv.Itoa(port)
-	log.Println("Listening on port " + portStr + "...")
+	log.Println("Listening on port :" + portStr + "...")
 
 	err := http.ListenAndServe(portStr, nil)
 	if err != nil {
